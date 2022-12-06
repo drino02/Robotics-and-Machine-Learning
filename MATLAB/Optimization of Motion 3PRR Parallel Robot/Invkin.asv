@@ -1,0 +1,62 @@
+function q = Invkin(p,theta,r,b, ea)
+%INVKIN Summary of this function goes here
+%   Input:
+%       p - position of end-effector
+%       theta - orientation of end-effector wrt to world
+%       r - constant distance of moving platform's vertex to the center of
+%           the moving platform
+%       b - contant distance of the  vertex of the base from the center o
+%           the base platform
+%       ea - length of segment ea
+%   Output:
+%       q - current configuration
+
+% movign platform
+rot_p_w = rotz(theta); % rotation of end-effector wrt to the world
+rot_p_w = rot_p_w(1:2,1:2); % extract the cols and rows corresponding 
+                            % only x and y
+a1 = rot_p_w*([r*cosd(-30); r*sind(-30)]);
+a2 = rot_p_w*([r*cosd(90); r*sind(90)]);
+a3 = rot_p_w*([r*cosd(-150); r*sind(-150)]);
+
+% static platform
+b1 = [b*cosd(-30); b*sind(-30)];
+b2 = [b*cosd(90); b*sind(90)];
+b3 = [b*cosd(-150); b*sind(-150)];
+
+% ea vectors
+beta1 = acos(((norm(a1-b3)^2) + (norm(b1-b3)^2) - (norm(a1-b1)^2))/...
+    (2*norm(a1-b3)*norm(b1-b3)));
+beta2 = acos(((norm(a2-b1)^2) + (norm(b2-b1)^2) - (norm(a2-b2)^2))/...
+    (2*norm(a2-b1)*norm(b2-b1)));
+beta3 = acos(((norm(a3-b2)^2) + (norm(b3-b2)^2) - (norm(a3-b3)^2))/...
+    (2*norm(a3-b2)*norm(b3-b2)));
+phi = acos(((norm(a1-b1)^2) + (norm(b1-b3)^2) - (norm(a1-b3)^2))/...
+    (2*norm(a1-b1)*norm(b1-b3)));
+gamma1 = asin((norm(a1-b3)*sin(beta1))/ea);
+gamma2 = asin((norm(a2-b1)*sin(beta2))/ea);
+gamma3 = asin((norm(a3-b2)*sin(beta3))/ea);
+rho = pi - phi - gamma1;
+e0 = norm(a1-b1)*cos(phi)
+e05 = ea*cos(gamma1)
+e1 = (b3-b1)/norm(b3-b1);
+e15 = [ea*cos(gamma1); ea*sin(gamma1)]+a1+[cos(phi) 0; 0 sin(phi)]*(a1-b1);
+e2 = [ea*cos(gamma2); ea*sin(gamma2)]+a2;
+e3 = [ea*cos(gamma3); ea*sin(gamma3)]+a3;
+aa1 = norm(e1-a1)
+aa2 = norm(e2-a2)
+aa3 = norm(e2-a2)
+% ea1 = a1-e1;
+% ea2 = a2-e2;
+% ea3 = a3-e3;
+
+% configuration
+% q = [p+rot_p_w*(a1)-ea1-b1;
+%      p+rot_p_w*(a2)-ea2-b2;
+%      p+rot_p_w*(a3)-ea3-b3];
+q = [norm(e1-b1);
+     norm(e2-b2);
+     norm(e3-b3)];
+
+end
+
