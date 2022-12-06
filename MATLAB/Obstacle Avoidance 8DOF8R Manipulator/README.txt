@@ -1,0 +1,2 @@
+
+This is an implementation of two obstacle avoidance algorithms namely, (1) Task Priority Redundancy Resolution and (2) Artificial Potential Field. Please see the report file for the in-depth discussion on the theories and methodologies.
